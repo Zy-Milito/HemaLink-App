@@ -19,7 +19,9 @@ namespace Infrastructure.Repositories
 
         public async Task<List<T>> GetAsync(BloodType bloodType)
         {
-            return await _dbContext.Set<T>().Where(br => br.RequestStatus == RequestStatus.Open && br.BloodTypesNeeded.Contains(bloodType)).ToListAsync();
+            return await _dbContext.Set<T>()
+                .Where(br => br.RequestStatus == RequestStatus.Open && br.BloodTypesNeeded.Contains(bloodType))
+                .ToListAsync();
         }
     }
 }

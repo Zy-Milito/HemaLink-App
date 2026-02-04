@@ -51,7 +51,14 @@ namespace Infrastructure
                 Role = Role.Standard
             };
 
-            modelBuilder.Entity<Donator>().HasData(admin);
+            modelBuilder.Entity<Donator>().HasData(admin, Gabriel);
+            modelBuilder.Entity<Requester>().HasData(GruppeSechs, Gamma);
+
+            modelBuilder.Entity<Requester>(entity =>
+            {
+                entity.Property(e => e.AdmissionStatus)
+                      .IsRequired();
+            });
 
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")

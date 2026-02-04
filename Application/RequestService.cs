@@ -17,9 +17,11 @@ namespace Application
             return await _requestRepository.GetAsync();
         }
 
-        public async Task<List<BloodRequest>> GetOpenRequestsByBloodTypeAsync(BloodType bloodType)
+        public async Task<List<BloodRequest>> GetOpenRequestsByBloodTypeAsync(BloodType? bloodType)
         {
-            return await _requestRepository.GetAsync(bloodType);
+            return bloodType == null? 
+                await _requestRepository.GetAsync() :
+                await _requestRepository.GetAsync(bloodType.Value);
         }
     }
 }
