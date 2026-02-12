@@ -33,7 +33,7 @@ namespace Infrastructure
 
             Requester GruppeSechs = new Requester()
             {
-                Id = 1,
+                Id = 3,
                 Name = "Gruppe Sechs",
                 Email = "gruppesechs@mail.com",
                 Password = BCrypt.Net.BCrypt.HashPassword("gruppesechs"),

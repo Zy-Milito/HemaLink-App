@@ -21,13 +21,18 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Models.User", b =>
+            modelBuilder.Entity("Domain.Models.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -44,61 +49,52 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Account");
 
-                    b.HasDiscriminator<string>("UserType").HasValue("User");
+                    b.HasDiscriminator<string>("AccountType").HasValue("Account");
 
                     b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Domain.Models.Donator", b =>
                 {
-                    b.HasBaseType("Domain.Models.User");
-
-                    b.Property<string>("BloodType")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DonationCount")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasDiscriminator().HasValue("Donator");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Donator");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Email = "admin",
-                            IsActive = true,
-                            Name = "admin",
-                            Password = "$2a$11$N.nB45mfZ.ocViJjnR4ejubZdpw9qaT3lRUn.rrvboIItU5cZFQ0i",
-                            Role = 2,
-                            DonationCount = 0
-                        },
-                        new
-                        {
-                            Id = 4,
                             Email = "gabriel@mail.com",
-                            IsActive = true,
                             Name = "Gabriel",
-                            Password = "$2a$11$w6L6TmrpQ5lc221kEmWS0..thYqaSiXi5g4FEajiLPXpgNFTHq5WO",
-                            Role = 0,
-                            DonationCount = 0
+                            Phone = "1234567890123"
                         });
                 });
 
             modelBuilder.Entity("Domain.Models.Requester", b =>
                 {
-                    b.HasBaseType("Domain.Models.User");
+                    b.HasBaseType("Domain.Models.Account");
 
                     b.Property<int>("AdmissionStatus")
                         .HasColumnType("integer");
@@ -108,23 +104,42 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 3,
                             Email = "gruppesechs@mail.com",
                             IsActive = true,
                             Name = "Gruppe Sechs",
-                            Password = "$2a$11$sVDJf6dm5xNO265f9Xjrk.OXPRol.9xTL0gYLtzThgHJ1WepLke7G",
-                            Role = 0,
+                            Password = "$2a$11$zfzhWyeQnBPvmZd3Kir3eeE9HoigS5eqioH5R4Ulmf1soMEGQe3Ym",
                             AdmissionStatus = 1
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Models.Staff", b =>
+                {
+                    b.HasBaseType("Domain.Models.Account");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasDiscriminator().HasValue("Staff");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin",
+                            IsActive = true,
+                            Name = "admin",
+                            Password = "$2a$11$N7G6W/AvtDo3xJkxWM664eRDmcYulvWvwb.09q5T381GvicCyny4K",
+                            Role = 1
                         },
                         new
                         {
-                            Id = 3,
-                            Email = "grupogamma@mail.com",
+                            Id = 2,
+                            Email = "mod",
                             IsActive = true,
-                            Name = "Grupo Gamma",
-                            Password = "$2a$11$LewVl0EJZyPaFJ43QlpEQOp8YZyqYrCeUFJU8hYMIQVtp0iW.JBsK",
-                            Role = 0,
-                            AdmissionStatus = 0
+                            Name = "mod",
+                            Password = "$2a$11$wRKnnwjzr/zEwV3uUsSuyu3dQxU0Fkv98ejMi334ncv1r8eeTf6PS",
+                            Role = 0
                         });
                 });
 #pragma warning restore 612, 618

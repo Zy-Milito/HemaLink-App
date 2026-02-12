@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("requester-requester")]
+        [HttpPost("register-requester")]
         public async Task<ActionResult<ResponseDto<string>>> Register(RequesterRegistrationRequestDto request)
         {
             try
