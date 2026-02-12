@@ -14,15 +14,15 @@ namespace Application
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _config;
-        private readonly IUserRepository<User> _userRepository;
+        private readonly IAccountRepository<Account> _accountRepository;
 
-        public AuthService(IConfiguration config, IUserRepository<User> userRepository)
+        public AuthService(IConfiguration config, IAccountRepository<Account> accountRepository)
         {
             _config = config;
-            _userRepository = userRepository;
+            _accountRepository = accountRepository;
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(Account user)
         {
             var securityPassword = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]!));
 
@@ -43,38 +43,32 @@ namespace Application
 
         public async Task<string> LoginAsync(LoginRequestDto request)
         {
-            User? user = await _userRepository.GetAsync(request.Email);
+            Account? user = await _accountRepository.GetAsync(request.Email);
             if (user == null ||
-                !BCrypt.Net.BCrypt.Verify(request.Password, user.Password) ||
-                (user is Requester requester && requester.AdmissionStatus != AdmissionStatus.Accepted))
+                !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 throw new UnauthorizedAccessException("Invalid email or password.");
             }
 
-            return GenerateJwtToken(user);
-        }
-
-        public async Task<string> RegisterDonatorAsync(DonatorRegistrationRequestDto request)
-        {
-            if (await _userRepository.GetAsync(request.Email) != null)
+            if (user is Requester requester)
             {
-                throw new InvalidOperationException("User already exists.");
+
+                if (requester.AdmissionStatus == AdmissionStatus.Pending)
+                {
+                    throw new UnauthorizedAccessException("Requester account is not accepted yet.");
+                }
+                if (requester.AdmissionStatus == AdmissionStatus.Rejected)
+                {
+                    throw new UnauthorizedAccessException("Requester account has been rejected.");
+                }
             }
 
-            Donator user = new Donator
-            {
-                Name = request.Name,
-                Email = request.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Role = Role.Standard
-            };
-            await _userRepository.AddAsync(user);
             return GenerateJwtToken(user);
         }
 
         public async Task<string> RegisterRequesterAsync(RequesterRegistrationRequestDto request)
         {
-            if (await _userRepository.GetAsync(request.Email) != null)
+            if (await _accountRepository.GetAsync(request.Email) != null)
             {
                 throw new InvalidOperationException("User already exists.");
             }
@@ -84,10 +78,9 @@ namespace Application
                 Name = request.Name,
                 Email = request.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Role = Role.Standard,
                 AdmissionStatus = AdmissionStatus.Pending,
             };
-            await _userRepository.AddAsync(user);
+            await _accountRepository.AddAsync(user);
             return GenerateJwtToken(user);
         }
     }

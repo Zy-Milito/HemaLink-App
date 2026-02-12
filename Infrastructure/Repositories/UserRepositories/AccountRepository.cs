@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.UserRepositories
 {
-    public class UserRepository<T> : BaseRepository<T>, IUserRepository<T> where T : User
+    public class AccountRepository<T> : BaseRepository<T>, IAccountRepository<T> where T : Account
     {
-        public UserRepository(DonationsDbContext dbContext) : base(dbContext)
+        public AccountRepository(DonationsDbContext dbContext) : base(dbContext)
         {
 
         }

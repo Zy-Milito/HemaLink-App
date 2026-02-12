@@ -13,58 +13,49 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Donator admin = new Donator()
+            Staff admin = new Staff ()
             {
                 Id = 1,
                 Name = "admin",
                 Email = "admin",
                 Password = BCrypt.Net.BCrypt.HashPassword("admin"),
-                Role = Role.Admin
+                Role = StaffRole.Admin
+            };
+
+            Staff mod = new Staff()
+            {
+                Id = 2,
+                Name = "mod",
+                Email = "mod",
+                Password = BCrypt.Net.BCrypt.HashPassword("mod"),
+                Role = StaffRole.Moderator
             };
 
             Requester GruppeSechs = new Requester()
             {
-                Id = 2,
+                Id = 1,
                 Name = "Gruppe Sechs",
                 Email = "gruppesechs@mail.com",
                 Password = BCrypt.Net.BCrypt.HashPassword("gruppesechs"),
-                Role = Role.Standard,
                 AdmissionStatus = AdmissionStatus.Accepted
-            };
-
-            Requester Gamma = new Requester()
-            {
-                Id = 3,
-                Name = "Grupo Gamma",
-                Email = "grupogamma@mail.com",
-                Password = BCrypt.Net.BCrypt.HashPassword("gamma"),
-                Role = Role.Standard,
-                AdmissionStatus = AdmissionStatus.Pending
             };
 
             Donator Gabriel = new Donator()
             {
-                Id = 4,
+                Id = 1,
                 Name = "Gabriel",
                 Email = "gabriel@mail.com",
-                Password = BCrypt.Net.BCrypt.HashPassword("gabriel"),
-                Role = Role.Standard
+                Phone = "1234567890123"
             };
 
-            modelBuilder.Entity<Donator>().HasData(admin, Gabriel);
-            modelBuilder.Entity<Requester>().HasData(GruppeSechs, Gamma);
+            modelBuilder.Entity<Staff>().HasData(admin, mod);
+            modelBuilder.Entity<Donator>().HasData(Gabriel);
+            modelBuilder.Entity<Requester>().HasData(GruppeSechs);
 
-            modelBuilder.Entity<Requester>(entity =>
-            {
-                entity.Property(e => e.AdmissionStatus)
-                      .IsRequired();
-            });
-
-            modelBuilder.Entity<User>()
-                .HasDiscriminator<string>("UserType")
-                .HasValue<Donator>("Donator")
+            modelBuilder.Entity<Account>()
+                .HasDiscriminator<string>("AccountType")
+                .HasValue<Staff>("Staff")
                 .HasValue<Requester>("Requester");
-
 
             base.OnModelCreating(modelBuilder);
         }

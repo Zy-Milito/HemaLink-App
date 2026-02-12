@@ -19,7 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserRepository<User>, UserRepository<User>>();
+builder.Services.AddScoped<IAccountRepository<Account>, AccountRepository<Account>>();
 
 builder.Services.AddDbContext<DonationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:DbConnectionString"]));
