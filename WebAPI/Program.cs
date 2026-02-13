@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountRepository<Account>, AccountRepository<Account>>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddDbContext<DonationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:DbConnectionString"]));

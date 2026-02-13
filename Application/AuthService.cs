@@ -28,7 +28,12 @@ namespace Application
 
             SigningCredentials signature = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
 
-            var claimsForToken = new List<Claim>();
+            var claimsForToken = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user is Staff s ? s.Role.ToString() : "Requester")
+            };
 
             var jwtSecurityToken = new JwtSecurityToken(
                 _config["Authentication:Issuer"],
@@ -70,7 +75,7 @@ namespace Application
         {
             if (await _accountRepository.GetAsync(request.Email) != null)
             {
-                throw new InvalidOperationException("User already exists.");
+                throw new InvalidOperationException("This mail is already used.");
             }
 
             Requester user = new Requester
