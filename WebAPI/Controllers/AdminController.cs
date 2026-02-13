@@ -19,16 +19,41 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost("register-moderator")]
-        public async Task<ActionResult<ResponseDto<string>>> Register(ModeratorRegistrationRequestDto request)
+        public async Task<ActionResult<ResponseDto<StaffResponseDto>>> Register(ModeratorRegistrationRequestDto request)
         {
             try
             {
                 StaffResponseDto response = await _adminService.RegisterModeratorAsync(request);
-                return Ok(new ResponseDto<string>
+                return Ok(new ResponseDto<StaffResponseDto>
                 {
                     Status = 200,
                     Message = "Success",
-                    Data = response.ToString()
+                    Data = response
+                });
+            }
+            catch (InvalidOperationException exception)
+            {
+                return BadRequest(new ResponseDto<string>
+                {
+                    Status = 400,
+                    Message = exception.Message,
+                    Data = null
+                });
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("promote-moderator")]
+        public async Task<ActionResult<ResponseDto<StaffResponseDto>>> Promote(ModeratorPromotionDto request)
+        {
+            try
+            {
+                StaffResponseDto response = await _adminService.PromoteModeratorAsync(request);
+                return Ok(new ResponseDto<StaffResponseDto>
+                {
+                    Status = 200,
+                    Message = "Success",
+                    Data = response
                 });
             }
             catch (InvalidOperationException exception)

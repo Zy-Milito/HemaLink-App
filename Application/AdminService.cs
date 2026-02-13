@@ -38,5 +38,37 @@ namespace Application
                 Role = user.Role.ToString()
             };
         }
+
+        public async Task<StaffResponseDto> PromoteModeratorAsync(ModeratorPromotionDto request)
+        {
+            Account? user = await _accountRepository.GetAsync(request.Email);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            if (user is not Staff staffUser)
+            {
+                throw new InvalidOperationException("User is not a moderator.");
+            }
+
+            if (staffUser.Role == StaffRole.Admin)
+            {
+                throw new InvalidOperationException("User is already admin.");
+            }
+
+            staffUser.Role = StaffRole.Admin;
+
+            await _accountRepository.UpdateAsync(staffUser);
+
+            return new StaffResponseDto
+            {
+                Id = staffUser.Id,
+                Name = staffUser.Name,
+                Email = staffUser.Email,
+                Role = staffUser.Role.ToString()
+            };
+
+        }
     }
 }
